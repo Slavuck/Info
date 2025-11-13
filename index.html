@@ -1,73 +1,274 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Slava � Steckbrief</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #fff7c0, #ffe066);
-      color: #333;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 {
-      font-size: 2.5em;
-      text-shadow: 1px 1px 2px #aaa;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .card {
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      max-width: 800px;
-      width: 100%;
-      line-height: 1.6;
-    }
-    h2 {
-      color: #ffb600;
-      margin-top: 20px;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Slava — Steckbrief (PDF Viewer)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1: #fff7c0;
+    --bg2: #ffe066;
+    --card: #ffffff;
+    --accent: #ffb600;
+    --muted: #6b6b6b;
+  }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#222}
+  .wrap{max-width:1100px;margin:28px auto;padding:22px;display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+  .sheet{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.12)}
+  header h1{margin:0;font-size:1.6rem;color:#222}
+  header p{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+  /* viewer area */
+  .viewer {
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .toolbar{
+    display:flex;gap:8px;align-items:center;justify-content:space-between;
+  }
+  .controls {display:flex;gap:8px;align-items:center;}
+  .btn{background:#fff;border:1px solid #eee;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+  .btn:active{transform:translateY(1px)}
+  .small{padding:6px 8px;font-size:.9rem}
+  .status{color:var(--muted);font-size:.9rem}
+  .canvasWrap{background:#ddd;border-radius:8px;display:flex;justify-content:center;align-items:center;padding:14px;min-height:500px}
+  canvas{box-shadow:0 8px 20px rgba(0,0,0,.08);border-radius:4px;max-width:100%}
+  /* sidebar */
+  .info {display:flex;flex-direction:column;gap:12px}
+  .meta{font-size:.95rem;color:var(--muted)}
+  .preview{height:220px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#fff,#f7f7f7);display:flex;align-items:center;justify-content:center}
+  .file-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .download{background:linear-gradient(180deg,#ffcb3b,#ffb600);color:#fff;border:none}
+  .note{font-size:.85rem;color:var(--muted)}
+  /* responsive */
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr; padding:12px}
+  }
+</style>
 </head>
 <body>
-  <h1>?? Steckbrief � Slava</h1>
-  <div class="card">
-    <h2>Pers�nliche Informationen</h2>
-    <ul>
-      <li><strong>Name:</strong> Slava</li>
-      <li><strong>Alter:</strong> 18 Jahre</li>
-      <li><strong>Hobbys:</strong> Programmieren und Arbeiten auf dem B�ro</li>
-      <li><strong>Lieblingsfarbe:</strong> Gelb � die Farbe der Sonne und der Energie</li>
-      <li><strong>Lieblingsessen:</strong> Pasta mit viel K�se (Rate mal ??)</li>
-      <li><strong>Beruf:</strong> Programmierer</li>
-      <li><strong>Besondere F�higkeiten:</strong> Kluges Denken, schnelle Probleml�sung und kreatives Arbeiten mit Code</li>
-      <li><strong>Wohnort:</strong> Niederf�llbach</li>
-    </ul>
+  <div class="wrap">
+    <section class="sheet viewer" aria-label="PDF viewer">
+      <header>
+        <h1>Slava — Steckbrief</h1>
+        <p>Interaktiver PDF-Viewer. Ansicht direkt на сайті — листай, масштабируй, скачивай.</p>
+      </header>
 
-    <h2>W�nsche / Ziele</h2>
-    <p>
-      Slava m�chte einen guten, gut bezahlten Job im Bereich Programmierung finden und au�erdem sein eigenes Spiel in Unity entwickeln. 
-      Sein Ziel ist es, nicht nur Spiele zu erstellen, sondern dabei auch etwas Neues zu lernen � und vielleicht eines Tages ein richtig erfolgreiches Game zu ver�ffentlichen.
-    </p>
+      <div class="toolbar">
+        <div class="controls">
+          <button id="prev" class="btn small">‹ Prev</button>
+          <button id="next" class="btn small">Next ›</button>
 
-    <h2>�ber Slava</h2>
-    <p>
-      Slava ist jemand, der sowohl Technik als auch Natur liebt � ein Programmierer, der gleichzeitig Bauer ist! 
-      Er verbindet digitales Denken mit handfestem Arbeiten. Wenn er nicht gerade programmiert, t�ftelt er wahrscheinlich an neuen Ideen oder genie�t die Ruhe auf dem Land.
-    </p>
+          <div style="width:10px"></div>
+
+          <label class="status">Seite <span id="page_num">0</span> / <span id="page_count">0</span></label>
+
+          <div style="width:14px"></div>
+
+          <button id="zoom_out" class="btn small">−</button>
+          <label class="status">Zoom</label>
+          <button id="zoom_in" class="btn small">+</button>
+
+          <select id="zoomSelect" class="btn small" style="margin-left:6px">
+            <option value="0.6">60%</option>
+            <option value="0.8">80%</option>
+            <option value="1.0" selected>100%</option>
+            <option value="1.5">150%</option>
+            <option value="2.0">200%</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="rotate" title="Rotate page" class="btn small">⟳ Rotate</button>
+          <a id="downloadLink" class="btn download small" download>Download PDF</a>
+        </div>
+      </div>
+
+      <div class="canvasWrap sheet" id="canvasContainer" aria-live="polite">
+        <canvas id="the-canvas"></canvas>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="note">Если PDF не загружается — проверь GitHub Pages или raw URL / CORS.</div>
+        <div class="status" id="loading">Готово</div>
+      </div>
+    </section>
+
+    <aside class="sheet info" aria-label="Info panel">
+      <div class="preview">
+        <!-- мини-превью: можно отобразить первую страницу как миниатюру (динамически) -->
+        <strong style="color:#444">PDF Vorschau</strong>
+      </div>
+
+      <div class="meta">
+        <div><strong>Datei:</strong> Info/Slava steckbrief.pdf</div>
+        <div><strong>Größe:</strong> automatisch vom Server</div>
+        <div><strong>Beschreibung:</strong> Steckbrief — persönliche Informationen, Ziele und Fähigkeiten.</div>
+      </div>
+
+      <div class="file-actions">
+        <a id="downloadLink2" class="btn download" download>PDF herunterladen</a>
+        <button id="openTab" class="btn">Open in new tab</button>
+      </div>
+
+      <hr style="border:none;height:1px;background:#efefef;margin:12px 0">
+
+      <div>
+        <div style="font-weight:600;margin-bottom:6px">Nützlich:</div>
+        <ul style="padding-left:16px;margin:0;color:var(--muted)">
+          <li>Blättere страницы кнопками ‹› или колесиком мыши</li>
+          <li>Изменяй масштаб для удобного чтения</li>
+          <li>Нажми «Open in new tab» чтобы увидеть файл raw</li>
+        </ul>
+      </div>
+    </aside>
   </div>
+
+  <!-- PDF.js (via unpkg CDN). Версия указана для стабильности. -->
+  <script src="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.min.js"></script>
+
+  <script>
+  // Путь к файлу PDF (относительно index.html в репозитории / GitHub Pages)
+  const pdfPath = './Info/Slava steckbrief.pdf'; // Оставь так, если файл лежит в Info/Slava steckbrief.pdf
+
+  // Конфигурация PDF.js
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js';
+
+  const canvas = document.getElementById('the-canvas');
+  const ctx = canvas.getContext('2d');
+  const pageNumElem = document.getElementById('page_num');
+  const pageCountElem = document.getElementById('page_count');
+  const loadingEl = document.getElementById('loading');
+
+  let pdfDoc = null, pageNum = 1, scale = 1.0, rotation = 0;
+
+  async function loadPdf(url) {
+    try {
+      loadingEl.textContent = 'Загрузка PDF…';
+      const loadingTask = pdfjsLib.getDocument(url);
+      pdfDoc = await loadingTask.promise;
+      pageCountElem.textContent = pdfDoc.numPages;
+      pageNum = 1;
+      renderPage(pageNum);
+      // обновляем ссылки скачивания
+      setDownloadLinks(url);
+    } catch (err) {
+      console.error('Ошибка загрузки PDF:', err);
+      loadingEl.textContent = 'Ошибка загрузки PDF. Проверь путь/CORS.';
+    }
+  }
+
+  async function renderPage(num) {
+    loadingEl.textContent = 'Рендер страницы…';
+    const page = await pdfDoc.getPage(num);
+    const viewport = page.getViewport({scale: scale, rotation: rotation});
+    // ограничим ширину холста (адаптация)
+    const container = document.getElementById('canvasContainer');
+    const maxWidth = Math.min(container.clientWidth - 20, viewport.width);
+    const fitScale = Math.min(scale, maxWidth / viewport.width);
+    const view = page.getViewport({scale: fitScale, rotation: rotation});
+
+    canvas.width = view.width;
+    canvas.height = view.height;
+    canvas.style.width = view.width + 'px';
+    canvas.style.height = view.height + 'px';
+
+    const renderContext = {
+      canvasContext: ctx,
+      viewport: view
+    };
+    await page.render(renderContext).promise;
+    pageNumElem.textContent = num;
+    loadingEl.textContent = 'Готово';
+    // обновим превью — маленькая миниатюра
+    try { drawPreview(); } catch(e){/*ignore*/ }
+  }
+
+  function queueRenderPage(num) {
+    if (pdfDoc) renderPage(num);
+  }
+
+  // Навигация
+  document.getElementById('prev').addEventListener('click', () => {
+    if (pageNum <= 1) return;
+    pageNum--;
+    queueRenderPage(pageNum);
+  });
+  document.getElementById('next').addEventListener('click', () => {
+    if (pageNum >= pdfDoc.numPages) return;
+    pageNum++;
+    queueRenderPage(pageNum);
+  });
+
+  // Zoom in/out
+  document.getElementById('zoom_in').addEventListener('click', ()=> {
+    scale = +(scale + 0.25).toFixed(2);
+    document.getElementById('zoomSelect').value = scale;
+    queueRenderPage(pageNum);
+  });
+  document.getElementById('zoom_out').addEventListener('click', ()=> {
+    if (scale <= 0.5) return;
+    scale = +(scale - 0.25).toFixed(2);
+    document.getElementById('zoomSelect').value = scale;
+    queueRenderPage(pageNum);
+  });
+  document.getElementById('zoomSelect').addEventListener('change', (e) => {
+    scale = parseFloat(e.target.value);
+    queueRenderPage(pageNum);
+  });
+
+  // Rotate
+  document.getElementById('rotate').addEventListener('click', ()=>{
+    rotation = (rotation + 90) % 360;
+    queueRenderPage(pageNum);
+  });
+
+  // Open raw in new tab
+  document.getElementById('openTab').addEventListener('click', () => {
+    window.open(pdfPath, '_blank');
+  });
+
+  // Ссылки скачивания
+  function setDownloadLinks(url){
+    const d1 = document.getElementById('downloadLink');
+    const d2 = document.getElementById('downloadLink2');
+    // Если url — локальный относительный путь (в gh-pages), можно подставить его напрямую
+    d1.href = url;
+    d2.href = url;
+    d1.setAttribute('download','Slava_steckbrief.pdf');
+    d2.setAttribute('download','Slava_steckbrief.pdf');
+  }
+
+  // колесико мыши для пролистывания (Ctrl+wheel — масштаб)
+  window.addEventListener('wheel', (e)=>{
+    if (e.ctrlKey) return; // не мешаем масштабированию браузера
+    if (e.target.closest('.canvasWrap')){
+      if (e.deltaY > 0){
+        // вниз — next
+        if (pageNum < (pdfDoc?pdfDoc.numPages:0)){ pageNum++; queueRenderPage(pageNum); }
+      } else {
+        if (pageNum > 1){ pageNum--; queueRenderPage(pageNum); }
+      }
+    }
+  }, {passive:true});
+
+  // мини-превью — рисуем первую страницу в sidebar (маленький canvas)
+  async function drawPreview(){
+    try {
+      const previewContainer = document.querySelector('.preview');
+      previewContainer.innerHTML = '';
+      const previewCanvas = document.createElement('canvas');
+      previewCanvas.style.maxWidth = '100%';
+      previewCanvas.style.height = '100%';
+      previewContainer.appendChild(previewCanvas);
+      const p = await pdfDoc.getPage(1);
+      const vp = p.getViewport({scale:0.2});
+      previewCanvas.width = vp.width; previewCanvas.height = vp.height;
+      await p.render({canvasContext: previewCanvas.getContext('2d'), viewport: vp}).promise;
+    } catch(e){ /* non-critical */ }
+  }
+
+  // Запуск
+  loadPdf(pdfPath);
+  </script>
 </body>
 </html>
